@@ -2625,7 +2625,9 @@ namespace DeskFrame
                         {
 
                             Debug.WriteLine("Folder detected: " + file);
-                            if (_currentFolderPath == "empty")
+                            // A board never binds to a dropped folder: the folder is added as a
+                            // shortcut card below (IsShortcutsOnly) instead of showing its contents.
+                            if (_currentFolderPath == "empty" && !Instance.IsBoard)
                             {
                                 _currentFolderPath = file;
                                 title.Text = Path.GetFileName(_currentFolderPath);
