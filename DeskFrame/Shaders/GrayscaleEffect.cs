@@ -10,7 +10,10 @@ namespace DeskFrame.Shaders
         public GrayscaleEffect()
         {
             PixelShader pixelShader = new PixelShader();
-            pixelShader.UriSource = new Uri("/DeskFrame;component/Shaders/GrayscaleEffect.ps", UriKind.Relative);
+            // Reference the shader resource by the current assembly name so this keeps working
+            // regardless of the assembly/exe name (e.g. renamed to DeskBoard).
+            string assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
+            pixelShader.UriSource = new Uri($"/{assemblyName};component/Shaders/GrayscaleEffect.ps", UriKind.Relative);
             this.PixelShader = pixelShader;
 
             this.UpdateShaderValue(InputProperty);

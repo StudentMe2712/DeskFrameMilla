@@ -117,16 +117,7 @@
         </StackPanel>
 
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Orientation="Horizontal">
-            <ui:Image x:Name="KofiButtonImage" 
-                      VerticalAlignment="Bottom"
-                      Source="/Icon/support_me_on_kofi_badge_dark.png" 
-                      RenderOptions.BitmapScalingMode="Fant" 
-                      Height="65"
-                      Margin="8,0,0,10"
-                      UseLayoutRounding="True"
-                      SnapsToDevicePixels="True"
-                      HorizontalAlignment="Left"
-                      Cursor="Hand" MouseUp="KofiButtonImage_MouseUp"/>
+            <!-- "Support me on Ko-fi" badge removed from the build. -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                 <Border CornerRadius="5"
                         Height="62"

@@ -11,7 +11,7 @@
         Background="#66232323" 
         Foreground="White"
         ResizeMode="NoResize"
-        Title="About DeskFrame"
+        Title="About DeskBoard"
         MinHeight="0"
         MinWidth="0"
         Height="265"
@@ -28,7 +28,7 @@
 
                 <Image Source="/ico.png" Height="75" Margin="0,0,0,10" HorizontalAlignment="Center"/>
 
-                <TextBlock Text="DeskFrame"
+                <TextBlock Text="DeskBoard"
                            FontSize="20"
                            FontWeight="Bold"
                            HorizontalAlignment="Center"/>

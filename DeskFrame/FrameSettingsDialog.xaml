@@ -287,12 +287,7 @@
 
 
                 </StackPanel>
-                <ui:Image x:Name="KofiButtonImage" VerticalAlignment="Bottom"
-                       Source="/Icon/support_me_on_kofi_badge_dark.png" 
-                       RenderOptions.BitmapScalingMode="Fant" Height="60"
-                       Margin="14"
-                       HorizontalAlignment="Left"
-                       Cursor="Hand" MouseUp="KofiButtonImage_MouseUp"/>
+                <!-- "Support me on Ko-fi" badge removed from the build. -->
 
                 <Separator HorizontalAlignment="Center"  Grid.Column="1" Margin="0,20,0,20"/>
 
@@ -475,9 +470,9 @@
 
                     <Label Content="{x:Static prop:Lang.FrameSettings_TextAlignment}" Height="30"/>
                     <ComboBox x:Name="TitleTextAlignmentComboBox" Margin="0,0,0,20" SelectionChanged="TitleTextAlignmentComboBox_SelectionChanged">
-                        <ComboBoxItem Content="Left"/>
-                        <ComboBoxItem Content="Center"/>
-                        <ComboBoxItem Content="Right"/>
+                        <ComboBoxItem Content="Слева"/>
+                        <ComboBoxItem Content="По центру"/>
+                        <ComboBoxItem Content="Справа"/>
                     </ComboBox>
                     <Label Content="{x:Static prop:Lang.FrameSettings_TitleBarIcons}" Height="30"/>
 

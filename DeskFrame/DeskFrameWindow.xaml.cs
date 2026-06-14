@@ -89,6 +89,18 @@ namespace DeskFrame
 
         private List<FileItem> _selectedItems = new List<FileItem>();
         private FileItem _draggedItem;
+
+        // Explorer-style mouse handling for the icon grid: mouse down only selects/prepares,
+        // the real drag starts in MouseMove once past the drag threshold.
+        private System.Windows.Point _itemDragStartPoint;
+        private bool _pendingItemDrag = false;
+        private bool _deferSelectionCollapse = false;
+        private FileItem? _mouseDownItem;
+
+        // Rubber-band (marquee) selection state for dragging a box over empty grid space.
+        private bool _isMarqueeSelecting = false;
+        private bool _marqueeActive = false;
+        private System.Windows.Point _marqueeStart;
         private FileItem _itemUnderCursor;
         private FileItem _itemCurrentlyRenaming;
         string _dropIntoFolderPath;
@@ -1410,6 +1422,15 @@ namespace DeskFrame
         }
         private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
+            // Ctrl+A selects every item in the frame (unless a rename text box is focused).
+            if (e.Key == Key.A
+                && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+                && Keyboard.FocusedElement is not System.Windows.Controls.TextBox)
+            {
+                SelectAllItems();
+                e.Handled = true;
+                return;
+            }
             if (_isRenaming)
             {
                 return;
@@ -2497,13 +2518,17 @@ namespace DeskFrame
             {
                 if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount != 2)
                 {
+                    System.Diagnostics.Debug.WriteLine(
+                        "DRAG: " + clickedItem.FullPath);
                     DataObject data = new DataObject(DataFormats.FileDrop, new string[] { clickedItem.FullPath! });
                     Task.Run(() =>
                     {
                         Thread.Sleep(5);
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            DragDrop.DoDragDrop(listView, data, DragDropEffects.Copy | DragDropEffects.Move);
+
+                           var effect = DragDrop.DoDragDrop(listView, data, DragDropEffects.Copy | DragDropEffects.Move);
+                           //MessageBox.Show(effect.ToString());
                         });
                     });
                 }
@@ -2608,6 +2633,7 @@ namespace DeskFrame
                     return;
                 }
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                
                 foreach (var file in files)
                 {
                     string destinationPath = Path.Combine(_currentFolderPath, Path.GetFileName(file));
@@ -2652,7 +2678,10 @@ namespace DeskFrame
                             }
                             else
                             {
-                                CreateShortcut(file, _currentFolderPath);
+                                Directory.Move(
+                                    file,
+                                    Path.Combine(_currentFolderPath, Path.GetFileName(file))
+                                );
                             }
                         }
                         else
@@ -2667,8 +2696,10 @@ namespace DeskFrame
                             }
                             else
                             {
-                                CreateShortcut(file, _currentFolderPath);
-
+                                File.Move(
+                                    file,
+                                    Path.Combine(_currentFolderPath, Path.GetFileName(file))
+                                );
                             }
 
                         }
@@ -2696,8 +2727,8 @@ namespace DeskFrame
                             Instance.ShowShortcutArrow = false;
                             CreateShortcut(file, _currentFolderPath);
 
-                            title.Text = "File frame";
-                            Instance.TitleText = "File frame";
+                            title.Text = "Файловая рамка";
+                            Instance.TitleText = "Файловая рамка";
                             Instance.Name = Path.GetFileName(Instance.Folder);
                             MainWindow._controller.WriteInstanceToKey(Instance);
                             LoadFiles(_currentFolderPath);
@@ -2764,141 +2795,408 @@ namespace DeskFrame
         private void FileItem_LeftMouseButtonDown(object sender, MouseButtonEventArgs e)
         {
             var clickedFileItem = (sender as Border)?.DataContext as FileItem;
-
-            if (clickedFileItem != null)
+            if (clickedFileItem == null)
             {
-                if (!(Keyboard.IsKeyDown(Key.LeftCtrl)
-                || Keyboard.IsKeyDown(Key.RightCtrl)
-                || Keyboard.IsKeyDown(Key.LeftShift)
-                || Keyboard.IsKeyDown(Key.RightShift)))
-                {
-                    clickedFileItem.IsSelected = true;
-                    if (!_contextMenuIsOpen)
-                    {
-                        _selectedItems.Clear();
+                return;
+            }
+            // Let the rename text box handle its own mouse input untouched.
+            if (clickedFileItem.IsRenaming)
+            {
+                return;
+            }
 
-                        foreach (var fileItem in FileItems)
-                        {
-                            if (fileItem != clickedFileItem)
-                            {
-                                fileItem.IsSelected = false;
-                                fileItem.Background = Brushes.Transparent;
-                            }
-                        }
-                    }
+            bool ctrl = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+            bool shift = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+            bool alt = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
+
+            // Double-click opens the item.
+            if (e.ClickCount == 2)
+            {
+                OpenFileItem(clickedFileItem);
+                e.Handled = true;
+                return;
+            }
+
+            if (ctrl)
+            {
+                // Toggle this item in/out of the selection, keep the rest (Explorer Ctrl+click).
+                clickedFileItem.IsSelected = !clickedFileItem.IsSelected;
+                if (clickedFileItem.IsSelected)
+                {
+                    if (!_selectedItems.Contains(clickedFileItem)) _selectedItems.Add(clickedFileItem);
+                    clickedFileItem.Background = SelectedItemBrush();
                 }
                 else
                 {
-                    clickedFileItem.IsSelected = !clickedFileItem.IsSelected;
+                    _selectedItems.Remove(clickedFileItem);
+                    clickedFileItem.Background = Brushes.Transparent;
                 }
-                if (clickedFileItem.IsSelected && !_selectedItems.Contains(clickedFileItem))
+                _deferSelectionCollapse = false;
+            }
+            else if (shift && !alt)
+            {
+                // Range-select from the nearest already-selected anchor (Explorer Shift+click).
+                SelectRangeTo(clickedFileItem);
+                _deferSelectionCollapse = false;
+            }
+            else
+            {
+                // Plain click.
+                if (clickedFileItem.IsSelected && _selectedItems.Count > 1 && _selectedItems.Contains(clickedFileItem))
                 {
-                    _selectedItems.Add(clickedFileItem);
+                    // Clicked inside an existing multi-selection: keep the whole set so it can be
+                    // dragged. Collapse to this single item on mouse up only if no drag happens.
+                    _deferSelectionCollapse = true;
+                }
+                else
+                {
+                    SelectOnly(clickedFileItem);
+                    _deferSelectionCollapse = false;
                 }
             }
-            if (e.ClickCount == 2 && sender is Border border && border.DataContext is FileItem clickedItem)
+
+            // Record a potential drag; the real drag starts in FileItem_MouseMove once the mouse
+            // has moved past the system drag threshold.
+            _mouseDownItem = clickedFileItem;
+            _itemDragStartPoint = e.GetPosition(this);
+            _pendingItemDrag = true;
+            e.Handled = true; // don't let the window start a DragMove when interacting with items
+        }
+
+        private void FileItem_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_pendingItemDrag || _mouseDownItem == null || e.LeftButton != MouseButtonState.Pressed)
             {
+                return;
+            }
+            var pos = e.GetPosition(this);
+            if (Math.Abs(pos.X - _itemDragStartPoint.X) < SystemParameters.MinimumHorizontalDragDistance &&
+                Math.Abs(pos.Y - _itemDragStartPoint.Y) < SystemParameters.MinimumVerticalDragDistance)
+            {
+                return;
+            }
+
+            _pendingItemDrag = false;
+            _deferSelectionCollapse = false; // a drag happened, keep the multi-selection
+
+            // The drag must always include the item the gesture started on.
+            if (!_selectedItems.Contains(_mouseDownItem))
+            {
+                SelectOnly(_mouseDownItem);
+            }
+
+            // Internal reorder (hold ALT) keeps working exactly as before.
+            if ((GetAsyncKeyState(0xA4) & 0x8000) != 0 || (GetAsyncKeyState(0xA5) & 0x8000) != 0)
+            {
+                _draggedItem = _mouseDownItem;
+            }
+
+            string[] filesToDrag = _selectedItems
+                .Where(x => x.IsSelected && !string.IsNullOrEmpty(x.FullPath))
+                .Select(x => x.FullPath!)
+                .ToArray();
+            if (filesToDrag.Length == 0)
+            {
+                filesToDrag = new[] { _mouseDownItem.FullPath! };
+            }
+
+            _isDragging = true;
+            try
+            {
+                DataObject data = new DataObject(DataFormats.FileDrop, filesToDrag);
+                DragDrop.DoDragDrop((DependencyObject)sender, data, DragDropEffects.Copy | DragDropEffects.Move);
+            }
+            finally
+            {
+                _isDragging = false;
+                _draggedItem = null;
+            }
+        }
+
+        private void FileItem_LeftMouseButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _pendingItemDrag = false;
+            if (!_deferSelectionCollapse)
+            {
+                return;
+            }
+            _deferSelectionCollapse = false;
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)
+                || Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                return;
+            }
+            var clickedFileItem = (sender as Border)?.DataContext as FileItem;
+            if (clickedFileItem != null)
+            {
+                // Plain click on an item that was part of a multi-selection collapses to just it.
+                SelectOnly(clickedFileItem);
+            }
+        }
+
+        // Highlight brush for a selected item (matches the hover/selection tint used elsewhere).
+        private static Brush SelectedItemBrush() => new SolidColorBrush(Color.FromArgb(50, 255, 255, 255));
+
+        // Selects a single item, clearing any previous selection.
+        private void SelectOnly(FileItem item)
+        {
+            _selectedItems.Clear();
+            foreach (var fileItem in FileItems)
+            {
+                if (fileItem == item) continue;
+                fileItem.IsSelected = false;
+                fileItem.Background = Brushes.Transparent;
+            }
+            item.IsSelected = true;
+            item.Background = SelectedItemBrush();
+            _selectedItems.Add(item);
+        }
+
+        // Range-selects from the clicked item to the nearest already-selected item.
+        private void SelectRangeTo(FileItem clickedFileItem)
+        {
+            int clickedIndex = FileItems.IndexOf(clickedFileItem);
+            if (clickedIndex < 0) return;
+
+            int minSelectedIndex = int.MaxValue;
+            int maxSelectedIndex = -1;
+            for (int i = 0; i < FileItems.Count; i++)
+            {
+                if (!FileItems[i].IsSelected) continue;
+                if (i == clickedIndex) continue;
+                maxSelectedIndex = i;
+                if (minSelectedIndex > i) minSelectedIndex = i;
+            }
+
+            int selectToIndex = maxSelectedIndex == -1
+                ? clickedIndex
+                : (Math.Abs(clickedIndex - minSelectedIndex) <= Math.Abs(clickedIndex - maxSelectedIndex)
+                    ? minSelectedIndex
+                    : maxSelectedIndex);
+
+            int start = Math.Min(clickedIndex, selectToIndex);
+            int end = Math.Max(clickedIndex, selectToIndex);
+            _selectedItems.Clear();
+            for (int i = 0; i < FileItems.Count; i++)
+            {
+                bool selected = start <= i && i <= end;
+                FileItems[i].IsSelected = selected;
+                if (selected)
+                {
+                    FileItems[i].Background = SelectedItemBrush();
+                    _selectedItems.Add(FileItems[i]);
+                }
+                else
+                {
+                    FileItems[i].Background = Brushes.Transparent;
+                }
+            }
+        }
+
+        // Selects every item in the frame (used by Ctrl+A).
+        private void SelectAllItems()
+        {
+            _selectedItems.Clear();
+            foreach (var fileItem in FileItems)
+            {
+                fileItem.IsSelected = true;
+                fileItem.Background = SelectedItemBrush();
+                _selectedItems.Add(fileItem);
+            }
+        }
+
+        // Clears the whole selection.
+        private void ClearSelection()
+        {
+            _selectedItems.Clear();
+            foreach (var fileItem in FileItems)
+            {
+                fileItem.IsSelected = false;
+                fileItem.Background = Brushes.Transparent;
+            }
+        }
+
+        // True if the hit element belongs to a file-item card.
+        private bool IsOverFileItem(object originalSource)
+        {
+            var d = originalSource as DependencyObject;
+            while (d != null)
+            {
+                if (d is Border b && b.DataContext is FileItem) return true;
+                d = (d is Visual || d is System.Windows.Media.Media3D.Visual3D)
+                    ? VisualTreeHelper.GetParent(d)
+                    : LogicalTreeHelper.GetParent(d);
+            }
+            return false;
+        }
+
+        // Walks up the visual/logical tree looking for an ancestor of type T.
+        private static T? FindAncestor<T>(object originalSource) where T : DependencyObject
+        {
+            var d = originalSource as DependencyObject;
+            while (d != null)
+            {
+                if (d is T t) return t;
+                d = (d is Visual || d is System.Windows.Media.Media3D.Visual3D)
+                    ? VisualTreeHelper.GetParent(d)
+                    : LogicalTreeHelper.GetParent(d);
+            }
+            return null;
+        }
+
+        // Rubber-band selection: pressing empty grid space starts a marquee instead of moving the
+        // window (the window still moves from the title bar). A plain click clears the selection.
+        private void ItemsArea_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Skip items (handled by the item itself) and the scrollbar (so it stays draggable).
+            if (e.ClickCount == 2 || IsOverFileItem(e.OriginalSource)
+                || FindAncestor<System.Windows.Controls.Primitives.ScrollBar>(e.OriginalSource) != null)
+            {
+                return;
+            }
+            _marqueeStart = e.GetPosition(SelectionCanvas);
+            _isMarqueeSelecting = true;
+            _marqueeActive = false;
+            scrollViewer.CaptureMouse();
+            e.Handled = true; // don't let the window start a DragMove on an empty-area press
+        }
+
+        private void ItemsArea_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_isMarqueeSelecting || e.LeftButton != MouseButtonState.Pressed)
+            {
+                return;
+            }
+            var current = e.GetPosition(SelectionCanvas);
+            if (!_marqueeActive)
+            {
+                if (Math.Abs(current.X - _marqueeStart.X) < SystemParameters.MinimumHorizontalDragDistance &&
+                    Math.Abs(current.Y - _marqueeStart.Y) < SystemParameters.MinimumVerticalDragDistance)
+                {
+                    return;
+                }
+                _marqueeActive = true;
+                if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+                {
+                    ClearSelection();
+                }
+                SelectionRectangle.Visibility = Visibility.Visible;
+            }
+
+            double x = Math.Min(current.X, _marqueeStart.X);
+            double y = Math.Min(current.Y, _marqueeStart.Y);
+            double w = Math.Abs(current.X - _marqueeStart.X);
+            double h = Math.Abs(current.Y - _marqueeStart.Y);
+            Canvas.SetLeft(SelectionRectangle, x);
+            Canvas.SetTop(SelectionRectangle, y);
+            SelectionRectangle.Width = w;
+            SelectionRectangle.Height = h;
+
+            bool additive = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+            UpdateMarqueeSelection(new Rect(x, y, w, h), additive);
+            e.Handled = true;
+        }
+
+        private void ItemsArea_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (!_isMarqueeSelecting)
+            {
+                return;
+            }
+            _isMarqueeSelecting = false;
+            scrollViewer.ReleaseMouseCapture();
+            SelectionRectangle.Visibility = Visibility.Collapsed;
+            if (!_marqueeActive
+                && !(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                // Plain click on empty space clears the selection (Explorer behaviour).
+                ClearSelection();
+            }
+            _marqueeActive = false;
+            e.Handled = true;
+        }
+
+        // Selects every item whose card intersects the marquee rectangle.
+        private void UpdateMarqueeSelection(Rect marquee, bool additive)
+        {
+            foreach (var fileItem in FileItems)
+            {
+                if (FileWrapPanel.ItemContainerGenerator.ContainerFromItem(fileItem) is not FrameworkElement container)
+                {
+                    continue;
+                }
+                Rect bounds;
                 try
                 {
-                    // On a board, items always open externally (folders/shortcuts in Explorer,
-                    // files by association) and never navigate inside the frame.
-                    if (Instance.FolderOpenInsideFrame && clickedItem.IsFolder && !Instance.IsBoard)
-                    {
-                        _currentFolderPath = clickedItem.FullPath;
-                        PathToBackButton.Visibility = _currentFolderPath == Instance.Folder
-                            ? Visibility.Collapsed : Visibility.Visible;
-                        Search.Margin = PathToBackButton.Visibility == Visibility.Visible ?
-                                        new Thickness(PathToBackButton.Width + 4, 0, 0, 0) : new Thickness(0, 0, 0, 0);
-                        InitializeFileWatchers();
-                        FileItems.Clear();
-                        LoadFiles(clickedItem.FullPath);
-                    }
-                    else
-                    {
-                        Process.Start(new ProcessStartInfo(clickedItem.FullPath!) { UseShellExecute = true });
-                    }
-                    if (Instance.LastAccesedToFirstRow)
-                    {
-                        var fileId = GetFileId(clickedFileItem.FullPath!).ToString();
-                        var newList = new List<string>(Instance.LastAccessedFiles);
-                        newList.Remove(fileId);
-                        newList.Insert(0, fileId);
-                        Instance.LastAccessedFiles = newList;
-                        var wrapPanel = FindParentOrChild<WrapPanel>(FileWrapPanel);
-                        if (wrapPanel != null)
-                        {
-                            double itemWidth = wrapPanel.ItemWidth;
-                            ItemPerRow = (int)((this.Width) / itemWidth);
-                        }
-                        FirstRowByLastAccessed(FileItems, Instance.LastAccessedFiles, ItemPerRow);
-                    }
+                    bounds = container.TransformToVisual(SelectionCanvas)
+                                      .TransformBounds(new Rect(0, 0, container.ActualWidth, container.ActualHeight));
                 }
-                catch //(Exception ex)
+                catch
                 {
-                    //  MessageBox.Show($"Error opening file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    continue;
+                }
+                if (marquee.IntersectsWith(bounds))
+                {
+                    if (!fileItem.IsSelected)
+                    {
+                        fileItem.IsSelected = true;
+                        fileItem.Background = SelectedItemBrush();
+                    }
+                    if (!_selectedItems.Contains(fileItem)) _selectedItems.Add(fileItem);
+                }
+                else if (!additive)
+                {
+                    if (fileItem.IsSelected)
+                    {
+                        fileItem.IsSelected = false;
+                        fileItem.Background = Brushes.Transparent;
+                    }
+                    _selectedItems.Remove(fileItem);
                 }
             }
-            else if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) && e.LeftButton == MouseButtonState.Pressed && sender is Border dragBorder)
+        }
+
+        // Opens a file item: board items and files open externally; in a folder frame a folder
+        // can optionally open inside the frame.
+        private void OpenFileItem(FileItem clickedItem)
+        {
+            try
             {
-                if (dragBorder.DataContext is FileItem fileItem)
+                // On a board, items always open externally (folders/shortcuts in Explorer, files
+                // by association) and never navigate inside the frame.
+                if (Instance.FolderOpenInsideFrame && clickedItem.IsFolder && !Instance.IsBoard)
                 {
-                    if (((GetAsyncKeyState(0xA4) & 0x8000) != 0 || (GetAsyncKeyState(0xA5) & 0x8000) != 0))
+                    _currentFolderPath = clickedItem.FullPath;
+                    PathToBackButton.Visibility = _currentFolderPath == Instance.Folder
+                        ? Visibility.Collapsed : Visibility.Visible;
+                    Search.Margin = PathToBackButton.Visibility == Visibility.Visible ?
+                                    new Thickness(PathToBackButton.Width + 4, 0, 0, 0) : new Thickness(0, 0, 0, 0);
+                    InitializeFileWatchers();
+                    FileItems.Clear();
+                    LoadFiles(clickedItem.FullPath);
+                }
+                else
+                {
+                    Process.Start(new ProcessStartInfo(clickedItem.FullPath!) { UseShellExecute = true });
+                }
+                if (Instance.LastAccesedToFirstRow)
+                {
+                    var fileId = GetFileId(clickedItem.FullPath!).ToString();
+                    var newList = new List<string>(Instance.LastAccessedFiles);
+                    newList.Remove(fileId);
+                    newList.Insert(0, fileId);
+                    Instance.LastAccessedFiles = newList;
+                    var wrapPanel = FindParentOrChild<WrapPanel>(FileWrapPanel);
+                    if (wrapPanel != null)
                     {
-                        _draggedItem = fileItem;
+                        double itemWidth = wrapPanel.ItemWidth;
+                        ItemPerRow = (int)((this.Width) / itemWidth);
                     }
-                    _isDragging = true;
-                    DataObject data = new DataObject(DataFormats.FileDrop, new string[] { fileItem.FullPath! });
-                    DragDrop.DoDragDrop(dragBorder, data, DragDropEffects.Copy | DragDropEffects.Move);
+                    FirstRowByLastAccessed(FileItems, Instance.LastAccessedFiles, ItemPerRow);
                 }
             }
-            if (clickedFileItem != null && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            catch
             {
-                if (!_selectedItems.Contains(clickedFileItem))
-                {
-
-                    if (clickedFileItem.IsSelected)
-                    {
-                        _selectedItems.Add(clickedFileItem);
-                    }
-                    else
-                    {
-                        _selectedItems.Remove(clickedFileItem);
-                    }
-                }
-            }
-            if (clickedFileItem != null && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-                && !((Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))))
-            {
-                int clickedIndex = FileItems.IndexOf(clickedFileItem);
-                int minSelectedIndex = int.MaxValue;
-                int maxSelectedIndex = -1;
-                for (int i = 0; i < FileItems.Count; i++)
-                {
-                    if (!FileItems[i].IsSelected) continue;
-                    if (i == clickedIndex) continue;
-                    maxSelectedIndex = i;
-                    if (minSelectedIndex > i) minSelectedIndex = i;
-                }
-                int selectToIndex = Math.Abs(clickedIndex - minSelectedIndex) <= Math.Abs(clickedIndex - maxSelectedIndex)
-                                    ? minSelectedIndex
-                                    : maxSelectedIndex;
-
-                int start = Math.Min(clickedIndex, selectToIndex);
-                int end = Math.Max(clickedIndex, selectToIndex);
-                _selectedItems.Clear();
-
-                for (int i = 0; i < FileItems.Count; i++)
-                {
-                    if (start <= i && i <= end)
-                    {
-                        FileItems[i].IsSelected = true;
-                        _selectedItems.Add(FileItems[i]);
-                    }
-                    else
-                    {
-                        FileItems[i].IsSelected = false;
-                    }
-                }
             }
         }
 

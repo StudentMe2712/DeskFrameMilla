@@ -2,6 +2,7 @@
 using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Threading;
 using Application = System.Windows.Application;
@@ -17,13 +18,19 @@ namespace DeskFrame
         public RegistryHelper reg = new RegistryHelper("DeskFrame");
         protected override void OnStartup(StartupEventArgs e)
         {
+            // Force the UI language to Russian by default. Only the *UI* culture is changed so
+            // resource lookups fall back to the neutral resources (translated to Russian); the
+            // formatting culture is left untouched so existing numeric settings keep parsing.
+            var ru = new CultureInfo("ru-RU");
+            CultureInfo.DefaultThreadCurrentUICulture = ru;
+            System.Threading.Thread.CurrentThread.CurrentUICulture = ru;
 #if !DEBUG
             if (Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length > 1)
             {
 
                 var dialog = new Wpf.Ui.Controls.MessageBox
                 {
-                    Title = "DeskFrame",
+                    Title = "DeskBoard",
                     Content = Lang.DeskFrame_AlreadyRunning,
                 };
 

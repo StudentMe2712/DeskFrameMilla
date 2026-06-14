@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <!-- Final executable is DeskBoard.exe. Namespaces/registry/AppData stay "DeskFrame"
+         so existing settings keep working. -->
+    <AssemblyName>DeskBoard</AssemblyName>
     <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>

@@ -13,6 +13,19 @@ public class InstanceController
     public List<DeskFrameWindow> _subWindows = new List<DeskFrameWindow>();
     public List<IntPtr> _subWindowsPtr = new List<IntPtr>();
     private bool Visible = true;
+
+    // Appends an error to %TEMP%\deskboard_crash.log so frame/board failures can be diagnosed
+    // even when they are swallowed during instance loading.
+    public static void LogError(string where, Exception ex)
+    {
+        try
+        {
+            string logPath = Path.Combine(Path.GetTempPath(), "deskboard_crash.log");
+            File.AppendAllText(logPath, $"[{DateTime.Now:o}] {where}\n{ex}\n\n");
+        }
+        catch { }
+    }
+
     public void WriteOverInstanceToKey(Instance instance, string oldKey)
     {
 
@@ -221,19 +234,26 @@ public class InstanceController
             IsShortcutsOnly = true,
             ShowShortcutArrow = false,
             IsBoard = true,
-            TitleText = "Board"
+            TitleText = "Доска"
         };
         instance.Name = guid;
 
         Instances.Add(instance);
         WriteInstanceToKey(instance);
 
-        var subWindow = new DeskFrameWindow(instance);
-        subWindow.ChangeBackgroundOpacity(instance.Opacity);
-        _subWindows.Add(subWindow);
-        subWindow.Show();
-        _subWindowsPtr.Add(new WindowInteropHelper(subWindow).Handle);
-        InitDetails();
+        try
+        {
+            var subWindow = new DeskFrameWindow(instance);
+            subWindow.ChangeBackgroundOpacity(instance.Opacity);
+            _subWindows.Add(subWindow);
+            subWindow.Show();
+            _subWindowsPtr.Add(new WindowInteropHelper(subWindow).Handle);
+            InitDetails();
+        }
+        catch (Exception ex)
+        {
+            LogError("AddBoardInstance: failed to create board", ex);
+        }
     }
     public void RemoveInstance(Instance instance, DeskFrameWindow window)
     {
@@ -687,12 +707,19 @@ public class InstanceController
             Debug.WriteLine("Showing windows...");
             foreach (var Instance in Instances)
             {
-                var subWindow = new DeskFrameWindow(Instance);
-                _subWindows.Add(subWindow);
-                subWindow.ChangeBackgroundOpacity(Instance.Opacity);
-                subWindow.Show();
-                _subWindowsPtr.Add(new WindowInteropHelper(subWindow).Handle);
-                InitDetails();
+                try
+                {
+                    var subWindow = new DeskFrameWindow(Instance);
+                    _subWindows.Add(subWindow);
+                    subWindow.ChangeBackgroundOpacity(Instance.Opacity);
+                    subWindow.Show();
+                    _subWindowsPtr.Add(new WindowInteropHelper(subWindow).Handle);
+                    InitDetails();
+                }
+                catch (Exception ex)
+                {
+                    LogError($"InitInstances: failed to show frame '{Instance.Name}'", ex);
+                }
             }
             foreach (var window in _subWindows)
             {

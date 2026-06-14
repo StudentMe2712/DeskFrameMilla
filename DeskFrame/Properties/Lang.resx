@@ -1,17 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -118,422 +118,422 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="FrameSettings.AutoExpandonCursor" xml:space="preserve">
-    <value>Expand on cursor over</value>
+    <value>Разворачивать при наведении</value>
     <comment>CHK_TB: Open "frame" on cursor over (unroll)</comment>
   </data>
   <data name="FrameSettings.CheckFolderSize" xml:space="preserve">
-    <value>Show folder size in menu</value>
+    <value>Показывать размер папки в меню</value>
     <comment>CHK_TB: Show the folder size of the folder that is shown in the frame in the menu accessed with right-click on the titlebar</comment>
   </data>
   <data name="FrameSettings.ShowLastAccessedItem" xml:space="preserve">
-    <value>Show last accessed items first</value>
+    <value>Недавние элементы — первыми</value>
     <comment>CHK_TB: Show last accessed items in the first row</comment>
   </data>
   <data name="FrameSettings.ShowShortcutArrow" xml:space="preserve">
-    <value>Show shortcut arrow</value>
+    <value>Показывать стрелку ярлыка</value>
     <comment>CHK_TB: Show the shortcut arrow on the bottom left of icons</comment>
   </data>
   <data name="FrameSettings.IdleOpacityLabel" xml:space="preserve">
-    <value>Idle opacity:</value>
+    <value>Прозрачность в покое:</value>
   </data>
   <data name="FrameSettings.AnimationSpeed" xml:space="preserve">
-    <value>Animation speed:</value>
+    <value>Скорость анимации:</value>
   </data>
   <data name="FrameSettings.ShowOnVirtualDesktopLabel" xml:space="preserve">
-    <value>Visible on virtual desktop:</value>
+    <value>Видна на рабочих столах:</value>
     <comment>Label: Show the frame on the 1,2,3.. virtual desktop.</comment>
   </data>
   <data name="FrameSettings.ShowFileExtensionIcon" xml:space="preserve">
-    <value>File extensions</value>
+    <value>Расширения файлов</value>
     <comment>CHK: Add show "file extensions" icon in the titlebar for quick toggling</comment>
   </data>
   <data name="FrameSettings.ShowHiddenFilesIcon" xml:space="preserve">
-    <value>Hidden files</value>
+    <value>Скрытые файлы</value>
     <comment>CHK: Add show "hidden files" icon in the titlebar for quick toggling</comment>
   </data>
   <data name="FrameSettings.ShowOnVirtualDesktopPlaceHolder" xml:space="preserve">
-    <value>All (or e.g. 1,2,3)</value>
+    <value>Все (или напр. 1,2,3)</value>
     <comment>Placeholder text in textbox for choosing which virtual desktops the frame should appear on</comment>
   </data>
   <data name="FrameSettings.TitleBarIcons" xml:space="preserve">
-    <value>Title bar icons:</value>
+    <value>Значки заголовка:</value>
     <comment>Label: Icons appearing in the titlebar</comment>
   </data>
   <data name="FrameSettings.BorderColor" xml:space="preserve">
-    <value>Border color (hex):</value>
+    <value>Цвет рамки (hex):</value>
   </data>
   <data name="FrameSettings.CategoryMiscellaneous" xml:space="preserve">
-    <value>Miscellaneous</value>
+    <value>Разное</value>
     <comment>Label for the category</comment>
   </data>
   <data name="FrameSettings.CategoryTitleBar" xml:space="preserve">
-    <value>Title bar</value>
+    <value>Заголовок</value>
     <comment>Label for the category</comment>
   </data>
   <data name="FrameSettings.CategoryFileItems" xml:space="preserve">
-    <value>File items</value>
+    <value>Элементы</value>
     <comment>Label for the category</comment>
   </data>
   <data name="FrameSettings.BackgroundColor" xml:space="preserve">
-    <value>Background color (hex): </value>
+    <value>Цвет фона (hex): </value>
   </data>
   <data name="FrameSettings.TextColor" xml:space="preserve">
-    <value>Text color (hex):</value>
+    <value>Цвет текста (hex):</value>
   </data>
   <data name="FrameSettings.TextShadowColor" xml:space="preserve">
-    <value>Text shadow color (hex):</value>
+    <value>Цвет тени текста (hex):</value>
   </data>
   <data name="FrameSettings.TitleBarTextText" xml:space="preserve">
-    <value>Title bar text:</value>
+    <value>Текст заголовка:</value>
     <comment>Title of the window</comment>
   </data>
   <data name="FrameSettings.Font" xml:space="preserve">
-    <value>Font:</value>
+    <value>Шрифт:</value>
   </data>
   <data name="FrameSettings.TextSize" xml:space="preserve">
-    <value>Text size:</value>
+    <value>Размер текста:</value>
   </data>
   <data name="FrameSettings.TextAlignment" xml:space="preserve">
-    <value>Text alignment:</value>
+    <value>Выравнивание текста:</value>
   </data>
   <data name="FrameSettings.ShowFilesRegex" xml:space="preserve">
-    <value>Show files (regex):</value>
+    <value>Показывать файлы (regex):</value>
   </data>
   <data name="FrameSettings.HideFilesRegex" xml:space="preserve">
-    <value>Hide files (regex):</value>
+    <value>Скрывать файлы (regex):</value>
   </data>
   <data name="FrameSettings.Searchdot" xml:space="preserve">
-    <value>Search...</value>
+    <value>Поиск...</value>
   </data>
   <data name="FrameSettings.IconSize" xml:space="preserve">
-    <value>Icon size:</value>
+    <value>Размер значков:</value>
   </data>
   <data name="FrameSettings.ShowIconText" xml:space="preserve">
-    <value>Show icon text</value>
+    <value>Показывать подписи значков</value>
   </data>
   <data name="FrameSettings.RevertButton" xml:space="preserve">
-    <value>Revert</value>
+    <value>Отменить</value>
     <comment>Button: revert settings</comment>
   </data>
   <data name="FrameSettings.ChangeStyle" xml:space="preserve">
-    <value>Change style</value>
+    <value>Изменить стиль</value>
     <comment>Button</comment>
   </data>
   <data name="FrameSettings.ChangeFolder" xml:space="preserve">
-    <value>Change folder</value>
+    <value>Изменить папку</value>
     <comment>Button</comment>
   </data>
   <data name="DeskFrameFrameSettings.TitleBarText" xml:space="preserve">
-    <value>DeskFrame settings</value>
+    <value>Настройки DeskBoard</value>
     <comment>Title of the window</comment>
   </data>
   <data name="DeskFrameFrameSettings.DefaultFrameStyle" xml:space="preserve">
-    <value>Default frame style</value>
+    <value>Стиль рамки по умолчанию</value>
   </data>
   <data name="DeskFrameFrameSettings.ResetDefaultStyle" xml:space="preserve">
-    <value>Reset default style</value>
+    <value>Сбросить стиль по умолчанию</value>
   </data>
   <data name="DeskFrameFrameSettings.AutoUpdate" xml:space="preserve">
-    <value>Auto update. Check for update on start and every 6 hours</value>
+    <value>Автообновление. Проверять при запуске и каждые 6 часов</value>
   </data>
   <data name="DeskFrameFrameSettings.DoubleClickHide" xml:space="preserve">
-    <value>Double click on desktop to toggle hide every frame</value>
+    <value>Двойной клик по рабочему столу скрывает/показывает все рамки</value>
   </data>
   <data name="DeskFrameFrameSettings.MadewithSpace" xml:space="preserve">
-    <value>Made with </value>
+    <value>Сделано с </value>
     <comment>Made with + a whitespace</comment>
   </data>
   <data name="DeskFrameFrameSettings.ExportSettings" xml:space="preserve">
-    <value>Export settings</value>
+    <value>Экспорт настроек</value>
   </data>
   <data name="TitleBarContextMenu.Sortby" xml:space="preserve">
-    <value>Sort by</value>
+    <value>Сортировать по</value>
   </data>
   <data name="TitleBarContextMenu.LockFrame" xml:space="preserve">
-    <value>Lock frame</value>
+    <value>Закрепить рамку</value>
   </data>
   <data name="TitleBarContextMenu.Reload" xml:space="preserve">
-    <value>Reload</value>
+    <value>Обновить</value>
   </data>
   <data name="TitleBarContextMenu.OpenFolder" xml:space="preserve">
-    <value>Open folder</value>
+    <value>Открыть папку</value>
   </data>
   <data name="TitleBarContextMenu.GridView" xml:space="preserve">
-    <value>Grid view</value>
+    <value>Сетка</value>
   </data>
   <data name="TitleBarContextMenu.HiddenFiles" xml:space="preserve">
-    <value>Hidden files</value>
+    <value>Скрытые файлы</value>
     <comment>Toggle</comment>
   </data>
   <data name="TitleBarContextMenu.FileExtensions" xml:space="preserve">
-    <value>File extensions</value>
+    <value>Расширения файлов</value>
     <comment>Toggle</comment>
   </data>
   <data name="TitleBarContextMenu.FrameSettings" xml:space="preserve">
-    <value>Frame Settings</value>
+    <value>Настройки рамки</value>
   </data>
   <data name="TitleBarContextMenu.Info.Files" xml:space="preserve">
-    <value>Files: </value>
+    <value>Файлы: </value>
     <comment>whitespace at the end</comment>
   </data>
   <data name="TitleBarContextMenu.Info.Folders" xml:space="preserve">
-    <value>Folders: </value>
+    <value>Папки: </value>
     <comment>whitespace at the end</comment>
   </data>
   <data name="TitleBarContextMenu.Info.HiddenFiles" xml:space="preserve">
-    <value>(hidden)</value>
+    <value>(скрытые)</value>
     <comment>hidden files</comment>
   </data>
   <data name="TitleBarContextMenu.Info.LastUpdated" xml:space="preserve">
-    <value>Last Updated: </value>
+    <value>Обновлено: </value>
     <comment>whitespace at the end</comment>
   </data>
   <data name="TitleBarContextMenu.Remove" xml:space="preserve">
-    <value>Remove</value>
+    <value>Удалить</value>
   </data>
   <data name="TitleBarContextMenu.Sortby.FolderOrder" xml:space="preserve">
-    <value>Folder order</value>
+    <value>Порядок папок</value>
   </data>
   <data name="TitleBarContextMenu.Sortby.Name" xml:space="preserve">
-    <value>Name</value>
+    <value>Имя</value>
   </data>
   <data name="TitleBarContextMenu.Sortby.DateModified" xml:space="preserve">
-    <value>Date modified</value>
+    <value>Дата изменения</value>
   </data>
   <data name="TitleBarContextMenu.Sortby.DateCreated" xml:space="preserve">
-    <value>Date created</value>
+    <value>Дата создания</value>
   </data>
   <data name="TitleBarContextMenu.Sortby.FileType" xml:space="preserve">
-    <value>File type</value>
+    <value>Тип файла</value>
   </data>
   <data name="TitleBarContextMenu.Sortby.FileSize" xml:space="preserve">
-    <value>File size</value>
+    <value>Размер файла</value>
   </data>
   <data name="TitleBarContextMenu.Sortby.Ascending" xml:space="preserve">
-    <value>Ascending</value>
+    <value>По возрастанию</value>
   </data>
   <data name="TitleBarContextMenu.Sortby.Descending" xml:space="preserve">
-    <value>Descending</value>
+    <value>По убыванию</value>
   </data>
   <data name="TitleBarContextMenu.Sortby.FolderIder.None" xml:space="preserve">
-    <value>None</value>
+    <value>Нет</value>
   </data>
   <data name="TitleBarContextMenu.Sortby.FolderIder.First" xml:space="preserve">
-    <value>First</value>
+    <value>Сначала</value>
   </data>
   <data name="TitleBarContextMenu.Sortby.FolderIder.Last" xml:space="preserve">
-    <value>Last</value>
+    <value>В конце</value>
   </data>
   <data name="TitleBarContextMenu.UnlockFrame" xml:space="preserve">
-    <value>Unlock frame</value>
+    <value>Открепить рамку</value>
   </data>
   <data name="TitleBarContextMenu.RemoveMessageBox.Title" xml:space="preserve">
-    <value>Confirm</value>
+    <value>Подтверждение</value>
   </data>
   <data name="TitleBarContextMenu.RemoveMessageBox.Content" xml:space="preserve">
-    <value>Are you sure you want to remove it?</value>
+    <value>Вы уверены, что хотите удалить?</value>
   </data>
   <data name="TitleBarContextMenu.RemoveMessageBox.Yes" xml:space="preserve">
-    <value>Yes</value>
+    <value>Да</value>
   </data>
   <data name="TitleBarContextMenu.RemoveMessageBox.No" xml:space="preserve">
-    <value>No</value>
+    <value>Нет</value>
   </data>
   <data name="TitleBarContextMenu.Info.FolderSize" xml:space="preserve">
-    <value>Folder Size: </value>
+    <value>Размер папки: </value>
     <comment>whitespace at the end</comment>
   </data>
   <data name="TitleBarContextMenu.ChangeView" xml:space="preserve">
-    <value>Change view</value>
+    <value>Изменить вид</value>
   </data>
   <data name="TitleBarContextMenu.DetailsView" xml:space="preserve">
-    <value>Details view</value>
+    <value>Таблица</value>
   </data>
   <data name="TrayContextMenu.CheckUpdateButton" xml:space="preserve">
-    <value>Check for updates</value>
+    <value>Проверить обновления</value>
   </data>
   <data name="TrayContextMenu.VisitGithub" xml:space="preserve">
-    <value>Visit github</value>
+    <value>Открыть GitHub</value>
   </data>
   <data name="TrayContextMenu.StartOnLogin" xml:space="preserve">
-    <value>Start on login</value>
+    <value>Запускать при входе</value>
   </data>
   <data name="TrayContextMenu.Settings" xml:space="preserve">
-    <value>Settings</value>
+    <value>Настройки</value>
   </data>
   <data name="TrayContextMenu.AddFrame" xml:space="preserve">
-    <value>Add frame</value>
+    <value>Добавить рамку</value>
   </data>
   <data name="TrayContextMenu.Exit" xml:space="preserve">
-    <value>Exit</value>
+    <value>Выход</value>
     <comment>Button to close the application</comment>
   </data>
   <data name="FrameGridView.DateModified" xml:space="preserve">
-    <value>Date modified</value>
+    <value>Дата изменения</value>
   </data>
   <data name="FrameGridView.Name" xml:space="preserve">
-    <value>Name</value>
+    <value>Имя</value>
   </data>
   <data name="FrameGridView.Size" xml:space="preserve">
-    <value>Size</value>
+    <value>Размер</value>
   </data>
   <data name="showFolderInGrid.DropFolder" xml:space="preserve">
-    <value>Drop a folder</value>
+    <value>Перетащите папку</value>
   </data>
   <data name="FrameSettings.TitleBarText" xml:space="preserve">
-    <value>Frame settings</value>
+    <value>Настройки рамки</value>
     <comment>Title of the window</comment>
   </data>
   <data name="FrameSettings.FolderOpenInsideFrame" xml:space="preserve">
-    <value>Open folder inside window</value>
+    <value>Открывать папку внутри окна</value>
   </data>
   <data name="FrameTypeFlyout.Description" xml:space="preserve">
-    <value>The first folder or file you drag in decides the frame type. There are two types:</value>
+    <value>Первый перетащенный файл или папка определяет тип рамки. Есть два типа:</value>
   </data>
   <data name="FrameTypeFlyout.Description.FileTypeDescription" xml:space="preserve">
-    <value>Creates shortcuts from anywhere to access files and folders. When you drag another file or folder into it, it creates a shortcut of the item.</value>
+    <value>Создаёт ярлыки для доступа к файлам и папкам из любого места. При перетаскивании файла или папки создаётся ярлык элемента.</value>
   </data>
   <data name="FrameTypeFlyout.Description.FolderTypeDescription" xml:space="preserve">
-    <value>Shows the contents of a folder. When you drag another file or folder into it, it moves the item inside that folder.</value>
+    <value>Показывает содержимое папки. При перетаскивании файла или папки элемент перемещается в эту папку.</value>
   </data>
   <data name="FrameTypeFlyout.Folder" xml:space="preserve">
-    <value>Folder:</value>
+    <value>Папка:</value>
   </data>
   <data name="FrameTypeFlyout.File" xml:space="preserve">
-    <value>File:</value>
+    <value>Файл:</value>
   </data>
   <data name="FrameSettings.CategoryWindow" xml:space="preserve">
-    <value>Window</value>
+    <value>Окно</value>
   </data>
   <data name="FrameSettings.SnapWidthToIconWidth" xml:space="preserve">
-    <value>Resize width to fit icon size</value>
+    <value>Подгонять ширину под размер значков</value>
     <comment>TextBlock</comment>
   </data>
   <data name="FrameSettings.SnapWidthToIconWidth_PlusScrollbarWidth" xml:space="preserve">
-    <value>Reserve space for scrollbar</value>
+    <value>Оставлять место для полосы прокрутки</value>
     <comment>TextBlock</comment>
   </data>
   <data name="FrameSettings.PositionX" xml:space="preserve">
-    <value>Position X:</value>
+    <value>Позиция X:</value>
     <comment>TextBlock</comment>
   </data>
   <data name="FrameSettings.PositionY" xml:space="preserve">
-    <value>Position Y: </value>
+    <value>Позиция Y: </value>
     <comment>TextBlock</comment>
   </data>
   <data name="DeskFrame.AlreadyRunning" xml:space="preserve">
-    <value>DeskFrame is already running</value>
+    <value>DeskBoard уже запущен</value>
   </data>
   <data name="FrameSettings.ActiveColor" xml:space="preserve">
-    <value>Active color (hex)</value>
+    <value>Активный цвет (hex)</value>
   </data>
   <data name="Deskframe.Update.DialogContent" xml:space="preserve">
-    <value>Updating requires administrator privileges</value>
+    <value>Для обновления требуются права администратора</value>
     <comment>Content of dialog</comment>
   </data>
   <data name="FrameSettings.HideTitleBarIconsWhenInactive" xml:space="preserve">
-    <value>Hide icons on inactive window</value>
+    <value>Скрывать значки на неактивном окне</value>
   </data>
   <data name="DeskFrameFrameSettings.Drag" xml:space="preserve">
     <value>DRAG</value>
     <comment>Drag button</comment>
   </data>
   <data name="DeskFrameFrameSettings.SnapDescription" xml:space="preserve">
-    <value>[Frame] Snap frame with 10 pixel distance</value>
+    <value>[Рамка] Привязка рамки с зазором 10 пикселей</value>
   </data>
   <data name="DeskFrameFrameSettings.Scroll" xml:space="preserve">
     <value>SCROLL</value>
     <comment>Button</comment>
   </data>
   <data name="DeskFrameFrameSettings.ChangeIconSizeDescription" xml:space="preserve">
-    <value>Change icon size</value>
+    <value>Изменить размер значков</value>
     <comment>Button</comment>
   </data>
   <data name="FrameSettings.GrayscaleEnable" xml:space="preserve">
-    <value>Enable grayscale</value>
+    <value>Включить оттенки серого</value>
     <comment>CheckBox</comment>
   </data>
   <data name="FrameSettings.GrayScaleEnabledInactiveOnly" xml:space="preserve">
-    <value>Grayscale only when frame is inactive</value>
+    <value>Оттенки серого только когда рамка неактивна</value>
     <comment>CheckBox</comment>
   </data>
   <data name="FrameSettings.GrayScaleMaxLevel" xml:space="preserve">
-    <value>Gray level:</value>
+    <value>Уровень серого:</value>
   </data>
   <data name="TitleBarContextMenu.CustomItemOrder" xml:space="preserve">
-    <value>Custom</value>
+    <value>Свой порядок</value>
   </data>
   <data name="TitleBarContextMenu.CustomItemOrder.DeleteOrder" xml:space="preserve">
-    <value>Delete</value>
+    <value>Удалить</value>
     <comment>Delete button</comment>
   </data>
   <data name="TitleBarContextMenu_CustomItemOrder_ToggleSwitch_Enable" xml:space="preserve">
-    <value>Enabled</value>
+    <value>Включено</value>
     <comment>Enable/Disable ToggleSwitch</comment>
   </data>
   <data name="TitleBarContextMenu_CustomItemOrder_ToggleSwitch_Disable" xml:space="preserve">
-    <value>Disabled</value>
+    <value>Выключено</value>
     <comment>Enable/Disable ToggleSwitch</comment>
   </data>
   <data name="DeskFrameFrameSettings.RenameFilesDescription" xml:space="preserve">
-    <value>Rename items, ENTER to confirm</value>
+    <value>Переименование, ENTER для подтверждения</value>
   </data>
   <data name="DeskFrameFrameSettings_ReorderDescription" xml:space="preserve">
-    <value>[File] Change the order of the file</value>
+    <value>[Файл] Изменить порядок файла</value>
   </data>
   <data name="DeskFrameFrameSettings_SearchDescription" xml:space="preserve">
-    <value>To search move the cursor over the frame you want to search in and start typing</value>
+    <value>Для поиска наведите курсор на нужную рамку и начните печатать</value>
   </data>
   <data name="Deskframe.DropaFileOrFolder" xml:space="preserve">
-    <value>Drop a file or folder</value>
+    <value>Перетащите файл или папку</value>
     <comment>Text above the + sign when the frame folder isn't set</comment>
   </data>
   <data name="DeskFrameFrameSettings.ReloadAllFramesButton" xml:space="preserve">
-    <value>Reload all frames</value>
+    <value>Перезагрузить все рамки</value>
   </data>
   <data name="DeskFrameFrameSettings.ManageFrameButton" xml:space="preserve">
-    <value>Manage frame</value>
+    <value>Управление рамками</value>
   </data>
   <data name="DeskFrameFrameSettings.DragWinToolTip.MainFeatures" xml:space="preserve">
-    <value>Main features:</value>
+    <value>Основные возможности:</value>
   </data>
   <data name="DeskFrameFrameSettings.DragWinToolTip.Feature1" xml:space="preserve">
-    <value>• Move any window with right‑click drag</value>
+    <value>• Перемещение любого окна перетаскиванием правой кнопкой</value>
   </data>
   <data name="DeskFrameFrameSettings.DragWinToolTip.Feature2" xml:space="preserve">
-    <value>• Resize any window from edges and corners</value>
+    <value>• Изменение размера окна за края и углы</value>
   </data>
   <data name="DeskFrameFrameSettings.DragWinToolTip.Feature3" xml:space="preserve">
-    <value>• Scroll between virtual desktops with gestures</value>
+    <value>• Переключение виртуальных рабочих столов жестами</value>
   </data>
   <data name="DeskFrameFrameSettings.DragWinToolTip.Feature4" xml:space="preserve">
-    <value>• Change window opacity (Alt + mouse wheel)</value>
+    <value>• Изменение прозрачности окна (Alt + колесо мыши)</value>
   </data>
   <data name="DeskFrameFrameSettings.DragWinToolTip.Feature5" xml:space="preserve">
-    <value>• Scroll through windows with mouse wheel</value>
+    <value>• Прокрутка между окнами колесом мыши</value>
   </data>
   <data name="DeskFrameFrameSettings.DragWinToolTip.DoubleClickToGithub" xml:space="preserve">
-    <value>Double-click to visit GitHub page</value>
+    <value>Двойной клик — открыть страницу GitHub</value>
   </data>
   <data name="FrameSettings.FrameHeight" xml:space="preserve">
-    <value>Height:</value>
+    <value>Высота:</value>
   </data>
   <data name="FrameSettings.FrameWidth" xml:space="preserve">
-    <value>Width:</value>
+    <value>Ширина:</value>
   </data>
   <data name="DeskFrameFrameSettings.ScrollDownDescription" xml:space="preserve">
-    <value>[DOWN] on title bar: send window back</value>
+    <value>[ВНИЗ] на заголовке: отправить окно назад</value>
   </data>
   <data name="DeskFrameFrameSettings.ScrollUpDescription" xml:space="preserve">
-    <value>[UP] on title bar: bring window forward</value>
+    <value>[ВВЕРХ] на заголовке: вывести окно вперёд</value>
   </data>
   <data name="DeskFrameFrameSettings_EQSToolTip_Feature1" xml:space="preserve">
-    <value>Replaces Windows search with Everything search</value>
+    <value>Заменяет поиск Windows на поиск Everything</value>
   </data>
   <data name="DeskFrameFrameSettings_EQSToolTip_Feature2" xml:space="preserve">
-    <value>Preview images and videos</value>
+    <value>Предпросмотр изображений и видео</value>
   </data>
   <data name="DeskFrameFrameSettings_EQSToolTip_Feature3" xml:space="preserve">
-    <value>Calculator in search bar</value>
+    <value>Калькулятор в строке поиска</value>
   </data>
 </root>
