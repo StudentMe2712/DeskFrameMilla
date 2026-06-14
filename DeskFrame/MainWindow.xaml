@@ -33,7 +33,8 @@
                              Icon="{ui:SymbolIcon Symbol=Settings20}" Click="Settings_Button_Click" />
 
                 <MenuItem Name="addDesktopFrame" Height="34" Header="{x:Static prop:Lang.TrayContextMenu_AddFrame}" Click="addDesktopFrame_Click" Icon="{ui:SymbolIcon Symbol=Add20}"/>
-                <MenuItem x:Name="Exit_Button" Height="34" 
+                <MenuItem Name="addBoard" Height="34" Header="Add board" Click="addBoard_Click" Icon="{ui:SymbolIcon Symbol=Board20}"/>
+                <MenuItem x:Name="Exit_Button" Height="34"
                           Header="{x:Static prop:Lang.TrayContextMenu_Exit}" Click="ExitApp" Icon="{ui:SymbolIcon Symbol=ArrowExit20}" />
 
             </ContextMenu>

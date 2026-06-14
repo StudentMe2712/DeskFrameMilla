@@ -63,6 +63,7 @@ public class Instance : INotifyPropertyChanged
     private double _titleFontSize = 13;
     private int _iconSize = 32;
     private bool _isShortcutsOnly = false;
+    private bool _isBoard = false;
     private bool _snapWidthToIconWidth = false;
     private bool _snapWidthToIconWidth_PlusScrollbarWidth = false;
     private bool _hideTitleBarIconsWhenInactive = false;
@@ -112,6 +113,18 @@ public class Instance : INotifyPropertyChanged
             {
                 _isShortcutsOnly = value;
                 OnPropertyChanged(nameof(IsShortcutsOnly), value.ToString());
+            }
+        }
+    }
+    public bool IsBoard
+    {
+        get => _isBoard;
+        set
+        {
+            if (_isBoard != value)
+            {
+                _isBoard = value;
+                OnPropertyChanged(nameof(IsBoard), value.ToString());
             }
         }
     }

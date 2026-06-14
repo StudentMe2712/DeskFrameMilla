@@ -49,6 +49,7 @@ public class InstanceController
                 key.SetValue("AutoExpandonCursor", instance.AutoExpandonCursor);
                 key.SetValue("ShowShortcutArrow", instance.ShowShortcutArrow);
                 key.SetValue("FolderOpenInsideFrame", instance.FolderOpenInsideFrame);
+                key.SetValue("IsBoard", instance.IsBoard);
                 key.SetValue("HideTitleBarIconsWhenInactive", instance.HideTitleBarIconsWhenInactive);
                 key.SetValue("SnapWidthToIconWidth", instance.SnapWidthToIconWidth);
                 key.SetValue("SnapWidthToIconWidth_PlusScrollbarWidth", instance.SnapWidthToIconWidth_PlusScrollbarWidth);
@@ -139,6 +140,7 @@ public class InstanceController
                 key.SetValue("AutoExpandonCursor", instance.AutoExpandonCursor);
                 key.SetValue("ShowShortcutArrow", instance.ShowShortcutArrow);
                 key.SetValue("FolderOpenInsideFrame", instance.FolderOpenInsideFrame);
+                key.SetValue("IsBoard", instance.IsBoard);
                 key.SetValue("HideTitleBarIconsWhenInactive", instance.HideTitleBarIconsWhenInactive);
                 key.SetValue("SnapWidthToIconWidth", instance.SnapWidthToIconWidth);
                 key.SetValue("SnapWidthToIconWidth_PlusScrollbarWidth", instance.SnapWidthToIconWidth_PlusScrollbarWidth);
@@ -194,6 +196,40 @@ public class InstanceController
         MainWindow._controller.WriteInstanceToKey(Instances.Last());
         var subWindow = new DeskFrameWindow(Instances.Last());
         subWindow.ChangeBackgroundOpacity(Instances.Last().Opacity);
+        _subWindows.Add(subWindow);
+        subWindow.Show();
+        _subWindowsPtr.Add(new WindowInteropHelper(subWindow).Handle);
+        InitDetails();
+    }
+    public void AddBoardInstance()
+    {
+        // A board is backed by a hidden shortcut folder, so it reuses the existing
+        // shortcut-frame mechanism: dropped items become shortcut cards instead of the
+        // frame binding to a folder and showing its contents.
+        string guid = Guid.NewGuid().ToString();
+        string boardFolder = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            appName,
+            guid);
+        Directory.CreateDirectory(boardFolder);
+
+        // Start from an "empty" instance so the board inherits the user's global defaults,
+        // then convert it into a board.
+        var instance = new Instance("empty", false)
+        {
+            Folder = boardFolder,
+            IsShortcutsOnly = true,
+            ShowShortcutArrow = false,
+            IsBoard = true,
+            TitleText = "Board"
+        };
+        instance.Name = guid;
+
+        Instances.Add(instance);
+        WriteInstanceToKey(instance);
+
+        var subWindow = new DeskFrameWindow(instance);
+        subWindow.ChangeBackgroundOpacity(instance.Opacity);
         _subWindows.Add(subWindow);
         subWindow.Show();
         _subWindowsPtr.Add(new WindowInteropHelper(subWindow).Handle);
@@ -450,6 +486,10 @@ public class InstanceController
                                             case "FolderOpenInsideFrame":
                                                 temp.FolderOpenInsideFrame = bool.Parse(value.ToString()!);
                                                 Debug.WriteLine($"FolderOpenInsideFrame added\t{temp.FolderOpenInsideFrame}");
+                                                break;
+                                            case "IsBoard":
+                                                temp.IsBoard = bool.Parse(value.ToString()!);
+                                                Debug.WriteLine($"IsBoard added\t{temp.IsBoard}");
                                                 break;
                                             case "HideTitleBarIconsWhenInactive":
                                                 temp.HideTitleBarIconsWhenInactive = bool.Parse(value.ToString()!);

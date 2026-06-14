@@ -107,6 +107,10 @@ namespace DeskFrame
         {
             _controller.AddInstance();
         }
+        private void addBoard_Click(object sender, RoutedEventArgs e)
+        {
+            _controller.AddBoardInstance();
+        }
         private void Window_Initialized(object sender, EventArgs e)
         {
             this.ShowInTaskbar = false;
