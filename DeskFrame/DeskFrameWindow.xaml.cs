@@ -2778,7 +2778,9 @@ namespace DeskFrame
             {
                 try
                 {
-                    if (Instance.FolderOpenInsideFrame && clickedItem.IsFolder)
+                    // On a board, items always open externally (folders/shortcuts in Explorer,
+                    // files by association) and never navigate inside the frame.
+                    if (Instance.FolderOpenInsideFrame && clickedItem.IsFolder && !Instance.IsBoard)
                     {
                         _currentFolderPath = clickedItem.FullPath;
                         PathToBackButton.Visibility = _currentFolderPath == Instance.Folder
