@@ -2716,13 +2716,13 @@ namespace DeskFrame
 
         void CreateShortcut(string filePath, string shortcutFolder = null)
         {
+            string folder = !string.IsNullOrEmpty(shortcutFolder) ? shortcutFolder : Path.GetDirectoryName(filePath);
             if (Path.GetExtension(filePath) == ".url")
             {
-                File.Copy(filePath, Path.Combine(shortcutFolder, Path.GetFileName(filePath)));
+                File.Copy(filePath, GetUniqueShortcutPath(folder, Path.GetFileName(filePath)));
                 return;
             }
-            string folder = !string.IsNullOrEmpty(shortcutFolder) ? shortcutFolder : Path.GetDirectoryName(filePath);
-            string shortcutPath = Path.Combine(folder, Path.GetFileNameWithoutExtension(filePath) + ".lnk");
+            string shortcutPath = GetUniqueShortcutPath(folder, Path.GetFileNameWithoutExtension(filePath) + ".lnk");
 
             WshShell shell = new WshShell();
             IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
@@ -2737,6 +2737,28 @@ namespace DeskFrame
             {
             }
             shortcut.Save();
+        }
+
+        // Returns a path inside 'folder' for 'fileName' that does not yet exist, appending
+        // " (2)", " (3)", ... on collision so multiple items with the same name each become
+        // their own card in a board instead of overwriting one another.
+        string GetUniqueShortcutPath(string folder, string fileName)
+        {
+            string candidate = Path.Combine(folder, fileName);
+            if (!File.Exists(candidate))
+            {
+                return candidate;
+            }
+            string name = Path.GetFileNameWithoutExtension(fileName);
+            string ext = Path.GetExtension(fileName);
+            int i = 2;
+            do
+            {
+                candidate = Path.Combine(folder, $"{name} ({i}){ext}");
+                i++;
+            }
+            while (File.Exists(candidate));
+            return candidate;
         }
 
         private void FileItem_LeftMouseButtonDown(object sender, MouseButtonEventArgs e)
