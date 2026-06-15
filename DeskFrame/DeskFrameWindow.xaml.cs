@@ -2633,7 +2633,17 @@ namespace DeskFrame
                     return;
                 }
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                
+
+                // Boards / shortcut-frames just move every dropped item into the backing
+                // folder. Handle them separately so big folders and items on other drives
+                // work (Directory.Move can't cross volumes), the UI doesn't freeze, and
+                // failures are surfaced instead of being silently swallowed.
+                if (Instance.IsShortcutsOnly)
+                {
+                    HandleShortcutDrop(files);
+                    return;
+                }
+
                 foreach (var file in files)
                 {
                     string destinationPath = Path.Combine(_currentFolderPath, Path.GetFileName(file));
@@ -2744,6 +2754,116 @@ namespace DeskFrame
             }
         }
 
+
+        // Moves every dropped item into the board's backing folder. Runs off the UI thread
+        // because cross-volume folder copies (and large single files) can take a while.
+        private void HandleShortcutDrop(string[] files)
+        {
+            string targetFolder = _currentFolderPath;
+            if (string.IsNullOrEmpty(targetFolder) || !Directory.Exists(targetFolder))
+            {
+                InstanceController.LogError(
+                    "HandleShortcutDrop: backing folder missing",
+                    new DirectoryNotFoundException(targetFolder ?? "null"));
+                return;
+            }
+
+            _canAutoClose = false;
+            LoadingProgressRingFade(true);
+
+            Task.Run(() =>
+            {
+                var errors = new List<string>();
+                foreach (var path in files)
+                {
+                    try
+                    {
+                        if (string.IsNullOrEmpty(path)) continue;
+                        bool isDir = Directory.Exists(path);
+                        if (!isDir && !File.Exists(path)) continue;
+
+                        string name = Path.GetFileName(
+                            path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+                        if (string.IsNullOrEmpty(name)) name = new DirectoryInfo(path).Name;
+
+                        string dest = GetUniqueDestinationPath(targetFolder, name);
+                        if (isDir)
+                            MoveDirectoryRobust(path, dest);
+                        else
+                            File.Move(path, dest); // File.Move copies across volumes on its own
+                    }
+                    catch (Exception ex)
+                    {
+                        InstanceController.LogError($"Board drop failed for '{path}'", ex);
+                        errors.Add($"• {Path.GetFileName(path)} — {ex.Message}");
+                    }
+                }
+
+                Dispatcher.Invoke(() =>
+                {
+                    LoadingProgressRingFade(false);
+                    _canAutoClose = true;
+                    LoadFiles(_currentFolderPath); // refresh even if a watcher event was missed
+                    if (errors.Count > 0)
+                    {
+                        var dialog = new MessageBox
+                        {
+                            Title = "DeskBoard",
+                            Content = "Не удалось добавить на доску:\n\n" + string.Join("\n", errors),
+                            CloseButtonText = "OK"
+                        };
+                        _ = dialog.ShowDialogAsync();
+                    }
+                });
+            });
+        }
+
+        // Move a directory even across volumes: same volume -> instant rename;
+        // different volume -> recursive copy + delete (Directory.Move throws across volumes).
+        private static void MoveDirectoryRobust(string source, string dest)
+        {
+            string sourceRoot = Path.GetPathRoot(Path.GetFullPath(source)) ?? "";
+            string destRoot = Path.GetPathRoot(Path.GetFullPath(dest)) ?? "";
+            if (string.Equals(sourceRoot, destRoot, StringComparison.OrdinalIgnoreCase))
+            {
+                Directory.Move(source, dest);
+            }
+            else
+            {
+                CopyDirectory(source, dest);
+                Directory.Delete(source, true);
+            }
+        }
+
+        private static void CopyDirectory(string source, string dest)
+        {
+            Directory.CreateDirectory(dest);
+            foreach (var dir in Directory.EnumerateDirectories(source, "*", SearchOption.AllDirectories))
+            {
+                Directory.CreateDirectory(Path.Combine(dest, Path.GetRelativePath(source, dir)));
+            }
+            foreach (var f in Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories))
+            {
+                string target = Path.Combine(dest, Path.GetRelativePath(source, f));
+                Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+                File.Copy(f, target, false);
+            }
+        }
+
+        // Avoids clobbering an existing item of the same name (Move/Copy would otherwise throw).
+        private static string GetUniqueDestinationPath(string folder, string name)
+        {
+            string candidate = Path.Combine(folder, name);
+            if (!File.Exists(candidate) && !Directory.Exists(candidate)) return candidate;
+
+            string stem = Path.GetFileNameWithoutExtension(name);
+            string ext = Path.GetExtension(name); // empty for folders
+            for (int i = 2; ; i++)
+            {
+                candidate = Path.Combine(folder, $"{stem} ({i}){ext}");
+                if (!File.Exists(candidate) && !Directory.Exists(candidate)) return candidate;
+            }
+        }
 
         void CreateShortcut(string filePath, string shortcutFolder = null)
         {
