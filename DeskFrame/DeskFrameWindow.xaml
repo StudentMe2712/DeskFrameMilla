@@ -567,9 +567,25 @@
                        Opacity="0"
                     />
                     <TextBlock x:Name="title" MouseRightButtonDown="titleBar_MouseRightButtonDown"
+                           MouseLeftButtonDown="title_MouseLeftButtonDown"
                            Foreground="White"
                            FontSize="13">
                     </TextBlock>
+                    <!-- Inline editor shown on double-clicking the title to rename the frame/board. -->
+                    <TextBox x:Name="titleRenameBox"
+                             Visibility="Collapsed"
+                             MinWidth="80"
+                             Padding="2,0,2,0"
+                             BorderThickness="0"
+                             Background="#33FFFFFF"
+                             VerticalContentAlignment="Center"
+                             HorizontalContentAlignment="Center"
+                             FontSize="{Binding ElementName=title, Path=FontSize}"
+                             FontFamily="{Binding ElementName=title, Path=FontFamily}"
+                             Foreground="{Binding ElementName=title, Path=Foreground}"
+                             CaretBrush="{Binding ElementName=title, Path=Foreground}"
+                             KeyDown="TitleRenameBox_KeyDown"
+                             LostFocus="TitleRenameBox_LostFocus"/>
                 </StackPanel>
 
             </Grid>

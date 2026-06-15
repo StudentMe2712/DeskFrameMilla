@@ -4183,6 +4183,14 @@ namespace DeskFrame
             toggleHiddenFiles.IsChecked = Instance.ShowHiddenFiles;
             toggleFileExtension.IsChecked = Instance.ShowFileExtension;
 
+            MenuItem renameFrame = new MenuItem
+            {
+                Header = "Переименовать",
+                Height = 34,
+                Icon = new SymbolIcon(SymbolRegular.Rename20)
+            };
+            renameFrame.Click += (s, args) => { BeginTitleRename(); };
+
             MenuItem frameSettings = new MenuItem
             {
                 Header = Lang.TitleBarContextMenu_FrameSettings,
@@ -4534,6 +4542,7 @@ namespace DeskFrame
             contextMenu.Items.Add(toggleHiddenFiles);
             contextMenu.Items.Add(toggleFileExtension);
             contextMenu.Items.Add(new Separator());
+            contextMenu.Items.Add(renameFrame);
             contextMenu.Items.Add(frameSettings);
             contextMenu.Items.Add(new Separator());
             contextMenu.Items.Add(FrameInfoItem);
@@ -4796,6 +4805,72 @@ namespace DeskFrame
             {
                 e.Handled = true;
             }
+        }
+
+        // Inline title rename: double-clicking the title text edits Instance.TitleText
+        // (the display name shown in the title bar). Persisted automatically via the
+        // Instance.TitleText setter. The folder/Name of the frame is never touched.
+        private string _titleBeforeRename = "";
+
+        private void title_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                BeginTitleRename();
+                e.Handled = true; // stop the bubble to Window_MouseLeftButtonDown (which would minimize)
+            }
+        }
+
+        private void BeginTitleRename()
+        {
+            _titleBeforeRename = title.Text;
+            titleRenameBox.Text = title.Text;
+            title.Visibility = Visibility.Collapsed;
+            titleRenameBox.Visibility = Visibility.Visible;
+            titleRenameBox.Focus();
+            titleRenameBox.SelectAll();
+        }
+
+        private void CommitTitleRename()
+        {
+            if (titleRenameBox.Visibility != Visibility.Visible) return;
+
+            string newTitle = titleRenameBox.Text.Trim();
+            titleRenameBox.Visibility = Visibility.Collapsed;
+            title.Visibility = Visibility.Visible;
+
+            if (string.IsNullOrWhiteSpace(newTitle) || newTitle == _titleBeforeRename)
+            {
+                return; // keep the previous title on empty/unchanged input
+            }
+
+            Instance.TitleText = newTitle; // persists to the registry through OnPropertyChanged
+            title.Text = newTitle;
+        }
+
+        private void CancelTitleRename()
+        {
+            titleRenameBox.Visibility = Visibility.Collapsed;
+            title.Visibility = Visibility.Visible;
+        }
+
+        private void TitleRenameBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                CommitTitleRename();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Escape)
+            {
+                CancelTitleRename();
+                e.Handled = true;
+            }
+        }
+
+        private void TitleRenameBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            CommitTitleRename();
         }
 
         private void RenameTextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
